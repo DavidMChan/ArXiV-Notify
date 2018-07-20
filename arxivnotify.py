@@ -18,11 +18,14 @@
 # Copyright David Chan, 2018
 
 
+from __future__ import unicode_literals, print_function
+
+
 # HTML Request sending and parsing
 import urllib
 from urllib import request
-import requests
 from xml.etree import ElementTree
+import requests
 
 # Import time utilities for handling the time values
 import datetime
@@ -31,7 +34,6 @@ import time
 
 # Import the config parser
 import configparse
-
 
 ## Build an ArXiV API Query which will query for the key
 def build_query(queries, page, num_elements):
