@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ArXiV Notify script
-# This program is free software: you can redistribute it and/or p/nnnnnnjjjjjodify
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -157,3 +157,4 @@ try:
             raise RuntimeError("Mail Error: ", RETURN_VAL.text)
 except:
     raise RuntimeError('Arxiv notifier bot wasn\'t able to send an email! Check your mailgun API key and Root. HTML ERROR: {} {}'.format(RETURN_VAL.status_code, RETURN_VAL.text))
+
