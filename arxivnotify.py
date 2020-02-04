@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ArXiV Notify script
-# This program is free software: you can redistribute it and/or modify
+# This program is free software: you can redistribute it and/or p/nnnnnnjjjjjodify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -66,8 +66,8 @@ def fetch_queries(queries, query_time):
         query_page.close()
         page_root = ElementTree.fromstring(query_data)
         articles = page_root.findall("{http://www.w3.org/2005/Atom}entry")
-        yesterday = dateutil.parser.parse(page_root.findtext("{http://www.w3.org/2005/Atom}updated")) - datetime.timedelta(days=int(query_time))
-        
+        oldest_query_time = dateutil.parser.parse(page_root.findtext("{http://www.w3.org/2005/Atom}updated")) - datetime.timedelta(days=int(query_time))
+
         # We put this sleep in to coform to the ArXiV bot standards
         time.sleep(3)
 
@@ -77,15 +77,15 @@ def fetch_queries(queries, query_time):
             title = article.findtext('{http://www.w3.org/2005/Atom}title')
             abstract = article.findtext('{http://www.w3.org/2005/Atom}summary')
             date = article.findtext('{http://www.w3.org/2005/Atom}updated')
+            authors = ", ".join([name.text for name in article.iter('{http://www.w3.org/2005/Atom}name')])
             datetime_obj  = dateutil.parser.parse(date)
-            
             # If the published articles is too old - we're done looking.
-            if datetime_obj < yesterday:
+            if datetime_obj < oldest_query_time:
                 do_continue = False
                 break
 
             # Otherwise add the article
-            fetched_data.append((title, link, abstract, datetime_obj))
+            fetched_data.append((title, link, abstract, datetime_obj, authors))
         current_page += 1
 
     return fetched_data
@@ -118,23 +118,27 @@ if type(CFG['MAILGUN_TO']) is not list:
 
 ## 2. Build the HTML email by quering ArXiV
 try:
-    mail_subject = "ArXiVAI Bot Email - {}".format(datetime.date.today().strftime("%B %d, %Y"))
-    html_output = "<h2> ArXiVAI Bot Email - {} </h2>\n".format(datetime.date.today().strftime("%B %d, %Y"))
+    num_articles = 0
+    html_output = "<h2> ArXiVAI Bot Email - {}</h2>\n".format(datetime.date.today().strftime("%B %d, %Y"))
     for keyword in CFG['KEYWORD']:
         print("Parsing Keyword: {}".format(keyword))
         queries = fetch_queries([keyword], CFG['HISTORY_DAYS'])
         html_output += "<h3>" + keyword + "</h3>\n"
         html_output += "<ul>\n"
         for q in queries:
+            num_articles += 1
             html_output += "<li>\n"
-            html_output += "\t<b><u>{}</u></b>".format(q[0])
+            html_output += "\t<b><u><a href=\"{}\">{}</a></u></b>".format(q[1], q[0])
             html_output += "<br>\n"
-            html_output += "<a href=\"{}\">{}</a>&nbsp&nbsp&nbsp&nbsp{}\n".format(q[1],q[1],str(q[3]))
+            html_output += "<i>{}</i>".format(q[4])
+            html_output += "<br>\n"
+            html_output += "{}\n".format(str(q[3]))
             html_output += "<br>\n"
             html_output += "{}\n".format(q[2])
             html_output += "</li>\n"
             html_output += "<br>\n"
         html_output += "</ul>\n"
+    mail_subject = "ArXiVAI Bot Email - {}  - {} New Articles".format(datetime.date.today().strftime("%B %d, %Y"), num_articles)
 except:
     raise RuntimeError("There was an error fetching data from the ArXiV server! Check to make sure you are connected to the internet!")
 
