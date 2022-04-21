@@ -133,8 +133,8 @@ try:
             html_output += "<i>{}</i>".format(q[4])
             html_output += "<br>\n"
             html_output += "{}\n".format(str(q[3]))
-            html_output += "<br>\n"
-            html_output += "{}\n".format(q[2])
+            # html_output += "<br>\n"
+            # html_output += "{}\n".format(q[2])
             html_output += "</li>\n"
             html_output += "<br>\n"
         html_output += "</ul>\n"
@@ -151,10 +151,9 @@ try:
             data={"from": CFG['MAILGUN_FROM'],
                     "to": email,
                     "subject": mail_subject,
-                    "text": html_output,
+                    # "text": html_output,
                     "html": html_output})
         if RETURN_VAL.status_code != 200:
             raise RuntimeError("Mail Error: ", RETURN_VAL.text)
 except:
     raise RuntimeError('Arxiv notifier bot wasn\'t able to send an email! Check your mailgun API key and Root. HTML ERROR: {} {}'.format(RETURN_VAL.status_code, RETURN_VAL.text))
-
