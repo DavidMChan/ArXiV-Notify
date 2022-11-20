@@ -68,6 +68,11 @@ def fetch_queries(queries, query_time):
         articles = page_root.findall("{http://www.w3.org/2005/Atom}entry")
         oldest_query_time = dateutil.parser.parse(page_root.findtext("{http://www.w3.org/2005/Atom}updated")) - datetime.timedelta(days=int(query_time))
 
+        # Break the loop if no articles found!
+        if not articles:
+            do_continue = False
+            break
+
         # We put this sleep in to coform to the ArXiV bot standards
         time.sleep(3)
 
