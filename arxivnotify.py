@@ -38,14 +38,13 @@ import configparse
 ## Build an ArXiV API Query which will query for the key
 def build_query(queries, page, num_elements):
     query = "http://export.arxiv.org/api/query?search_query="
-    search_element = ""
-    if len(queries) == 0:
-        search_element = "\"\""
+    search_element = "\"\"" if len(queries) == 0 else ""
     for i in range(len(queries)):
-        search_element= search_element + "\"{}\"".format(urllib.parse.quote(str(queries[i])))
+        search_element = f'{search_element}\"{urllib.parse.quote(str(queries[i]))}\"'
         if i+1 != len(queries):
-            search_element = search_element + "+OR+"
-    suffix = "&sortBy=lastUpdatedDate&sortOrder=descending&start={}&max_results={}".format(str(page), str(num_elements))
+            search_element = f"{search_element}+OR+"
+    suffix = f"&sortBy=lastUpdatedDate&sortOrder=descending&start={str(page)}&max_results={str(num_elements)}"
+
     return query + search_element + suffix
 
 ## Fetch the articles which are up to date
@@ -124,26 +123,28 @@ if type(CFG['MAILGUN_TO']) is not list:
 ## 2. Build the HTML email by quering ArXiV
 try:
     num_articles = 0
-    html_output = "<h2> ArXiVAI Bot Email - {}</h2>\n".format(datetime.date.today().strftime("%B %d, %Y"))
+    html_output = f'<h2> ArXiVAI Bot Email - {datetime.date.today().strftime("%B %d, %Y")}</h2>\n'
+
     for keyword in CFG['KEYWORD']:
-        print("Parsing Keyword: {}".format(keyword))
+        print(f"Parsing Keyword: {keyword}")
         queries = fetch_queries([keyword], CFG['HISTORY_DAYS'])
-        html_output += "<h3>" + keyword + "</h3>\n"
+        html_output += f"<h3>{keyword}" + "</h3>\n"
         html_output += "<ul>\n"
         for q in queries:
             num_articles += 1
             html_output += "<li>\n"
-            html_output += "\t<b><u><a href=\"{}\">{}</a></u></b>".format(q[1], q[0])
+            html_output += f'\t<b><u><a href=\"{q[1]}\">{q[0]}</a></u></b>'
             html_output += "<br>\n"
-            html_output += "<i>{}</i>".format(q[4])
+            html_output += f"<i>{q[4]}</i>"
             html_output += "<br>\n"
-            html_output += "{}\n".format(str(q[3]))
+            html_output += f"{str(q[3])}\n"
             # html_output += "<br>\n"
             # html_output += "{}\n".format(q[2])
             html_output += "</li>\n"
             html_output += "<br>\n"
         html_output += "</ul>\n"
-    mail_subject = "ArXiVAI Bot Email - {}  - {} New Articles".format(datetime.date.today().strftime("%B %d, %Y"), num_articles)
+    mail_subject = f'ArXiVAI Bot Email - {datetime.date.today().strftime("%B %d, %Y")}  - {num_articles} New Articles'
+
 except:
     raise RuntimeError("There was an error fetching data from the ArXiV server! Check to make sure you are connected to the internet!")
 
@@ -161,4 +162,6 @@ try:
         if RETURN_VAL.status_code != 200:
             raise RuntimeError("Mail Error: ", RETURN_VAL.text)
 except:
-    raise RuntimeError('Arxiv notifier bot wasn\'t able to send an email! Check your mailgun API key and Root. HTML ERROR: {} {}'.format(RETURN_VAL.status_code, RETURN_VAL.text))
+    raise RuntimeError(
+        f"Arxiv notifier bot wasn\'t able to send an email! Check your mailgun API key and Root. HTML ERROR: {RETURN_VAL.status_code} {RETURN_VAL.text}"
+    )
