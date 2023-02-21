@@ -32,10 +32,10 @@ You can create an account for free at [https://www.mailgun.com/](https://www.mai
 
 ### 4. Setup the config file
 
-We need to add some details to the configuration file. Open up the arxivnotify.py file, it'll look something like this:
+We need to add some details to the configuration file. Open up the arxivnotify.cfg file, it'll look something like this:
 ```py
 #### General Configuration
-# How old of papers should the bot send you?
+# How many days of worth of papers should the bot send you?
 HISTORY_DAYS = 1
 #### Mailgun configuration ####
 # API Key, has the format "key-********************************"
