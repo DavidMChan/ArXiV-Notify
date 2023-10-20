@@ -13,7 +13,7 @@ We can clone the repository using: `git clone https://github.com/DavidMChan/ArXi
 This library depends on the `requests` library for API calls, and the `anthropic` library for summarization. Install the dependencies with:
 
 ```bash
-pip install -r requests.txt
+pip install -r requirements.txt
 ```
 
 ### 3. Setup a mailgun account
