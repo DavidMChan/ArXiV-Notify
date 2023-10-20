@@ -10,7 +10,11 @@ We can clone the repository using: `git clone https://github.com/DavidMChan/ArXi
 
 ### 2. Install the dependencies
 
-The only library that this depends on is the 'requests' python library. You can download and install using pip: `pip3 install requests`
+This library depends on the `requests` library for API calls, and the `anthropic` library for summarization. Install the dependencies with:
+
+```bash
+pip install -r requests.txt
+```
 
 ### 3. Setup a mailgun account
 
@@ -30,13 +34,18 @@ You can create an account for free at [https://www.mailgun.com/](https://www.mai
 
 (This tutorial is adapted from http://webcraft.tools/sending-email-with-mailgun/, which you may want to reference for further information)
 
-### 4. Setup the config file
+### 4. Setup the Anthropic API
+
+For summarization, we use Claude: https://docs.anthropic.com/claude/docs. Follow the instructions at that link to get an API key for Claude.
+
+### 5. Setup the config file
 
 We need to add some details to the configuration file. Open up the arxivnotify.cfg file, it'll look something like this:
 ```py
 #### General Configuration
 # How many days of worth of papers should the bot send you?
 HISTORY_DAYS = 1
+
 #### Mailgun configuration ####
 # API Key, has the format "key-********************************"
 MAILGUN_API_KEY = key-********************************
@@ -47,6 +56,11 @@ MAILGUN_FROM    = Person Name <person_email@domain.com>
 # Mailgun destination emails, have the form "person@domain.com"
 MAILGUN_TO      = person@domain.com
 MAILGUN_TO      = recipient_2@dummy.com
+
+#### CLAUDE Configuration ####
+# API Key for anthropic API: https://docs.anthropic.com/claude/reference/getting-started-with-the-api
+CLAUDE_API_KEY = "********************************"
+
 #### Keywords ####
 # You can have as many as you like
 KEYWORD = Monkey
@@ -55,13 +69,13 @@ KEYWORD = Bicycles
 
 In the `MAILGUN_API_KEY` field put your API key that you got from mailgun. In the `MAILGUN_ROOT`, put that API Base URL. In the `MAILGUN_FROM`, feel free to put what you want, as long as it has the format "Name \<email\>". Put the emails that you set up as authorized recipients in the `MAILGUN_TO` key. We can handle sending to as many as you want! (though they'll all get the same email). You can then add as many `KEYWORD` fields as you like. These are the searches that will be made.
 
-### 5. Setup a service to run the script
+### 6. Setup a service to run the script
 
 You can use whatever scheduler you like to run the script, but because we're big linux fans, we like using CRON. You can add a cron job for this script, `0 1 * * * python3 /path/to/arxivnotify.py`.
 
 If you're on windows, try using the AT command: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-2000-server/bb726974(v=technet.10)
 
-### 6. You're Done!
+### 7. You're Done!
 
 Enjoy your new ArXiV bot! :D
 
